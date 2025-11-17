@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SPA Responsiva</title>
+  <title>SPA Responsiva con Lazy Loading</title>
   <style>
     /* ====== GRID SYSTEM ====== */
     .row {
@@ -13,68 +13,35 @@
     }
     .col { grid-column: span 12; }
 
-    @media (min-width: 576px) {
-      .col-sm-6 { grid-column: span 6; }
-      .col-sm-4 { grid-column: span 4; }
-    }
-    @media (min-width: 768px) {
-      .col-md-6 { grid-column: span 6; }
-      .col-md-4 { grid-column: span 4; }
-    }
-    @media (min-width: 992px) {
-      .col-lg-6 { grid-column: span 6; }
-      .col-lg-4 { grid-column: span 4; }
-    }
-    @media (min-width: 1200px) {
-      .col-xl-6 { grid-column: span 6; }
-      .col-xl-4 { grid-column: span 4; }
-    }
-    @media (min-width: 1400px) {
-      .col-xxl-6 { grid-column: span 6; }
-      .col-xxl-4 { grid-column: span 4; }
-    }
+    @media (min-width: 576px) { .col-sm-6 { grid-column: span 6; } .col-sm-4 { grid-column: span 4; } }
+    @media (min-width: 768px) { .col-md-6 { grid-column: span 6; } .col-md-4 { grid-column: span 4; } }
+    @media (min-width: 992px) { .col-lg-6 { grid-column: span 6; } .col-lg-4 { grid-column: span 4; } }
+    @media (min-width: 1200px) { .col-xl-6 { grid-column: span 6; } .col-xl-4 { grid-column: span 4; } }
+    @media (min-width: 1400px) { .col-xxl-6 { grid-column: span 6; } .col-xxl-4 { grid-column: span 4; } }
 
     /* ====== GENERAL STYLES ====== */
     body { font-family: Arial, sans-serif; margin: 0; }
     nav {
-      background: #333;
-      color: #fff;
-      padding: 1rem;
-      display: flex;
-      gap: 1rem;
+      background: #333; color: #fff; padding: 1rem;
+      display: flex; gap: 1rem; position: sticky; top: 0;
     }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      cursor: pointer;
-    }
+    nav a { color: #fff; text-decoration: none; cursor: pointer; }
     nav a:hover { text-decoration: underline; }
 
-    section {
-      display: none;
-      padding: 2rem;
-    }
+    section { display: none; padding: 2rem; min-height: 100vh; }
     section.active { display: block; }
 
     .demo {
-      background: #eee;
-      border: 1px solid #ccc;
-      padding: 1rem;
-      text-align: center;
-      font-weight: bold;
+      background: #eee; border: 1px solid #ccc;
+      padding: 1rem; text-align: center; font-weight: bold;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 0.5rem;
-      text-align: center;
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 0.5rem; text-align: center; }
+
+    .loader {
+      text-align: center; padding: 1rem; color: #666;
     }
   </style>
 </head>
@@ -88,67 +55,60 @@
   </nav>
 
   <!-- ====== SECTIONS ====== -->
-  <section id="quienes" class="active">
-    <h2>Quienes Somos</h2>
-    <div class="row">
-      <div class="col col-sm-6 col-md-4 demo">Historia</div>
-      <div class="col col-sm-6 col-md-8 demo">Equipo</div>
-    </div>
-    <table>
-      <tr><th>Nombre</th><th>Rol</th></tr>
-      <tr><td>Ana</td><td>CEO</td></tr>
-      <tr><td>Carlos</td><td>CTO</td></tr>
-    </table>
-  </section>
+  <section id="quienes" class="active"><h2>Quienes Somos</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
+  <section id="valores"><h2>Nuestros Valores</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
+  <section id="contacto"><h2>Contacto</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
+  <section id="portafolio"><h2>Portafolio</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
 
-  <section id="valores">
-    <h2>Nuestros Valores</h2>
-    <div class="row">
-      <div class="col col-sm-4 demo">Innovación</div>
-      <div class="col col-sm-4 demo">Transparencia</div>
-      <div class="col col-sm-4 demo">Compromiso</div>
-    </div>
-    <table>
-      <tr><th>Valor</th><th>Descripción</th></tr>
-      <tr><td>Innovación</td><td>Buscamos soluciones creativas</td></tr>
-      <tr><td>Transparencia</td><td>Comunicación clara</td></tr>
-    </table>
-  </section>
-
-  <section id="contacto">
-    <h2>Contacto</h2>
-    <div class="row">
-      <div class="col col-sm-6 demo">Teléfono: +52 555-1234</div>
-      <div class="col col-sm-6 demo">Email: contacto@empresa.com</div>
-    </div>
-    <table>
-      <tr><th>Medio</th><th>Detalle</th></tr>
-      <tr><td>Teléfono</td><td>+52 555-1234</td></tr>
-      <tr><td>Email</td><td>contacto@empresa.com</td></tr>
-    </table>
-  </section>
-
-  <section id="portafolio">
-    <h2>Portafolio de Desarrollos</h2>
-    <div class="row">
-      <div class="col col-sm-6 col-md-4 demo">App Móvil</div>
-      <div class="col col-sm-6 col-md-4 demo">Web Corporativa</div>
-      <div class="col col-sm-12 col-md-4 demo">E-commerce</div>
-    </div>
-    <table>
-      <tr><th>Proyecto</th><th>Estado</th></tr>
-      <tr><td>App Móvil</td><td>Finalizado</td></tr>
-      <tr><td>Web Corporativa</td><td>En desarrollo</td></tr>
-      <tr><td>E-commerce</td><td>Planeado</td></tr>
-    </table>
-  </section>
-
-  <!-- ====== SCRIPT SPA ====== -->
+  <!-- ====== SCRIPT SPA + LAZY LOADING ====== -->
   <script>
+    // Cambiar sección activa
     function showSection(id) {
       document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+      const sec = document.getElementById(id);
+      sec.classList.add("active");
+      sec.querySelector(".content").innerHTML = ""; // limpiar contenido
+      sec.dataset.page = 0; // reiniciar scroll
+      loadMore(sec); // cargar primera tanda
     }
+
+    // Generar contenido simulado
+    function generateContent(sectionId, page) {
+      let html = '<div class="row">';
+      for (let i = 1; i <= 3; i++) {
+        html += `<div class="col col-sm-6 col-md-4 demo">${sectionId} - Bloque ${page*3+i}</div>`;
+      }
+      html += '</div>';
+      html += `<table>
+        <tr><th>${sectionId} Info</th><th>Detalle</th></tr>
+        <tr><td>Fila ${page*2+1}</td><td>Contenido adicional</td></tr>
+        <tr><td>Fila ${page*2+2}</td><td>Más datos</td></tr>
+      </table>`;
+      return html;
+    }
+
+    // Cargar más contenido al hacer scroll
+    function loadMore(sec) {
+      let page = parseInt(sec.dataset.page || "0");
+      if (page >= 5) { sec.querySelector(".loader").innerText = "Fin del contenido"; return; }
+      sec.querySelector(".content").innerHTML += generateContent(sec.id, page);
+      sec.dataset.page = page + 1;
+    }
+
+    // Detectar scroll en sección activa
+    window.addEventListener("scroll", () => {
+      const sec = document.querySelector("section.active");
+      if (!sec) return;
+      const loader = sec.querySelector(".loader");
+      const rect = loader.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        loadMore(sec);
+      }
+    });
+
+    // Inicializar primera sección
+    document.querySelectorAll("section").forEach(sec => sec.dataset.page = 0);
+    loadMore(document.getElementById("quienes"));
   </script>
 </body>
 </html>
