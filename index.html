@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SPA Responsiva con Lazy Loading</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SPA Responsiva con API y CRUD</title>
   <style>
     /* ====== GRID SYSTEM ====== */
-    .row {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1rem;
-    }
+    .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; }
     .col { grid-column: span 12; }
-
     @media (min-width: 576px) { .col-sm-6 { grid-column: span 6; } .col-sm-4 { grid-column: span 4; } }
     @media (min-width: 768px) { .col-md-6 { grid-column: span 6; } .col-md-4 { grid-column: span 4; } }
     @media (min-width: 992px) { .col-lg-6 { grid-column: span 6; } .col-lg-4 { grid-column: span 4; } }
@@ -20,29 +15,30 @@
     @media (min-width: 1400px) { .col-xxl-6 { grid-column: span 6; } .col-xxl-4 { grid-column: span 4; } }
 
     /* ====== GENERAL STYLES ====== */
+    :root { color-scheme: light dark; }
     body { font-family: Arial, sans-serif; margin: 0; }
-    nav {
-      background: #333; color: #fff; padding: 1rem;
-      display: flex; gap: 1rem; position: sticky; top: 0;
-    }
+    nav { background: #333; color: #fff; padding: 1rem; display: flex; gap: 1rem; position: sticky; top: 0; z-index: 10; }
     nav a { color: #fff; text-decoration: none; cursor: pointer; }
     nav a:hover { text-decoration: underline; }
 
     section { display: none; padding: 2rem; min-height: 100vh; }
     section.active { display: block; }
 
-    .demo {
-      background: #eee; border: 1px solid #ccc;
-      padding: 1rem; text-align: center; font-weight: bold;
-    }
+    .demo { background: #eee; border: 1px solid #ccc; padding: 1rem; text-align: center; font-weight: bold; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
     table, th, td { border: 1px solid #ccc; }
     th, td { padding: 0.5rem; text-align: center; }
+    caption { text-align: left; padding: 0.5rem 0; font-weight: bold; }
 
-    .loader {
-      text-align: center; padding: 1rem; color: #666;
-    }
+    .loader { text-align: center; padding: 1rem; color: #666; }
+    .btn { padding: 0.3rem 0.6rem; margin: 0.2rem; cursor: pointer; border: none; border-radius: 4px; }
+    .btn-edit { background: #ffc107; }
+    .btn-delete { background: #dc3545; color: #fff; }
+    .btn-add { background: #28a745; color: #fff; margin-top: 0.5rem; }
+    .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    input[type="text"], input[type="email"] { padding: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
+    .status { font-size: 0.9rem; color: #555; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -55,39 +51,118 @@
   </nav>
 
   <!-- ====== SECTIONS ====== -->
-  <section id="quienes" class="active"><h2>Quienes Somos</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
-  <section id="valores"><h2>Nuestros Valores</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
-  <section id="contacto"><h2>Contacto</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
-  <section id="portafolio"><h2>Portafolio</h2><div class="content"></div><div class="loader">Desplázate para cargar más...</div></section>
+  <section id="quienes" class="active">
+    <h2>Quienes Somos</h2>
+    <p class="status" id="status-quienes"></p>
+    <div class="content"></div>
+    <div class="loader">Desplázate para cargar más...</div>
 
-  <!-- ====== SCRIPT SPA + LAZY LOADING ====== -->
+    <div class="controls">
+      <input id="quienes-name" type="text" placeholder="Nombre"/>
+      <input id="quienes-email" type="email" placeholder="Email"/>
+      <button class="btn btn-add" onclick="addRow('quienes')">➕ Agregar Usuario</button>
+    </div>
+
+    <table id="table-quienes">
+      <caption>Usuarios (API: /users)</caption>
+      <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acciones</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="valores">
+    <h2>Nuestros Valores</h2>
+    <p class="status" id="status-valores"></p>
+    <div class="content"></div>
+    <div class="loader">Desplázate para cargar más...</div>
+
+    <div class="controls">
+      <input id="valores-title" type="text" placeholder="Título"/>
+      <input id="valores-body" type="text" placeholder="Descripción"/>
+      <button class="btn btn-add" onclick="addRow('valores')">➕ Agregar Valor</button>
+    </div>
+
+    <table id="table-valores">
+      <caption>Valores (API: /posts)</caption>
+      <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Acciones</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="contacto">
+    <h2>Contacto</h2>
+    <p class="status" id="status-contacto"></p>
+    <div class="content"></div>
+    <div class="loader">Desplázate para cargar más...</div>
+
+    <div class="controls">
+      <input id="contacto-name" type="text" placeholder="Nombre"/>
+      <input id="contacto-phone" type="text" placeholder="Teléfono"/>
+      <button class="btn btn-add" onclick="addRow('contacto')">➕ Agregar Contacto</button>
+    </div>
+
+    <table id="table-contacto">
+      <caption>Contactos (API: /users)</caption>
+      <thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="portafolio">
+    <h2>Portafolio</h2>
+    <p class="status" id="status-portafolio"></p>
+    <div class="content"></div>
+    <div class="loader">Desplázate para cargar más...</div>
+
+    <div class="controls">
+      <input id="portafolio-title" type="text" placeholder="Proyecto"/>
+      <input id="portafolio-state" type="text" placeholder="Estado"/>
+      <button class="btn btn-add" onclick="addRow('portafolio')">➕ Agregar Proyecto</button>
+    </div>
+
+    <table id="table-portafolio">
+      <caption>Proyectos (API: /todos)</caption>
+      <thead><tr><th>ID</th><th>Proyecto</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ====== SCRIPT SPA + LAZY + API CRUD ====== -->
   <script>
+    const API = "https://jsonplaceholder.typicode.com";
+
     // Cambiar sección activa
     function showSection(id) {
       document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
       const sec = document.getElementById(id);
       sec.classList.add("active");
-      sec.querySelector(".content").innerHTML = ""; // limpiar contenido
-      sec.dataset.page = 0; // reiniciar scroll
-      loadMore(sec); // cargar primera tanda
+      sec.querySelector(".content").innerHTML = "";
+      sec.dataset.page = 0;
+      sec.querySelector(".loader").innerText = "Desplázate para cargar más...";
+      loadMore(sec);
+      loadAPIData(id);
     }
 
-    // Generar contenido simulado
+    // Generar contenido simulado (para el scroll)
     function generateContent(sectionId, page) {
       let html = '<div class="row">';
       for (let i = 1; i <= 3; i++) {
         html += `<div class="col col-sm-6 col-md-4 demo">${sectionId} - Bloque ${page*3+i}</div>`;
       }
       html += '</div>';
+      // Agregar una tabla de ejemplo para ver la responsividad
       html += `<table>
-        <tr><th>${sectionId} Info</th><th>Detalle</th></tr>
-        <tr><td>Fila ${page*2+1}</td><td>Contenido adicional</td></tr>
-        <tr><td>Fila ${page*2+2}</td><td>Más datos</td></tr>
+        <caption>Tabla de ejemplo (${sectionId}) - Página ${page+1}</caption>
+        <thead><tr><th>Columna A</th><th>Columna B</th><th>Columna C</th></tr></thead>
+        <tbody>
+          <tr><td>Dato ${page+1}.1</td><td>Dato ${page+1}.2</td><td>Dato ${page+1}.3</td></tr>
+          <tr><td>Dato ${page+1}.4</td><td>Dato ${page+1}.5</td><td>Dato ${page+1}.6</td></tr>
+        </tbody>
       </table>`;
       return html;
     }
 
-    // Cargar más contenido al hacer scroll
+    // Lazy loading
     function loadMore(sec) {
       let page = parseInt(sec.dataset.page || "0");
       if (page >= 5) { sec.querySelector(".loader").innerText = "Fin del contenido"; return; }
@@ -95,20 +170,243 @@
       sec.dataset.page = page + 1;
     }
 
-    // Detectar scroll en sección activa
     window.addEventListener("scroll", () => {
       const sec = document.querySelector("section.active");
       if (!sec) return;
       const loader = sec.querySelector(".loader");
       const rect = loader.getBoundingClientRect();
-      if (rect.top < window.innerHeight) {
-        loadMore(sec);
-      }
+      if (rect.top < window.innerHeight) loadMore(sec);
     });
 
-    // Inicializar primera sección
+    // READ de API según sección
+    async function loadAPIData(sectionId) {
+      const statusEl = document.getElementById("status-" + sectionId);
+      statusEl.textContent = "Cargando datos...";
+      let url, tableBody;
+      if (sectionId === "quienes") {
+        url = `${API}/users`;
+        tableBody = document.querySelector("#table-quienes tbody");
+      } else if (sectionId === "valores") {
+        url = `${API}/posts`;
+        tableBody = document.querySelector("#table-valores tbody");
+      } else if (sectionId === "contacto") {
+        url = `${API}/users`;
+        tableBody = document.querySelector("#table-contacto tbody");
+      } else if (sectionId === "portafolio") {
+        url = `${API}/todos`;
+        tableBody = document.querySelector("#table-portafolio tbody");
+      }
+      tableBody.innerHTML = "<tr><td colspan='4'>Cargando...</td></tr>";
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        tableBody.innerHTML = "";
+        const rows = data.slice(0, 5); // pocas filas para demo
+        rows.forEach(item => tableBody.innerHTML += renderRow(sectionId, item));
+        statusEl.textContent = "Datos cargados (CRUD simulado).";
+      } catch (e) {
+        tableBody.innerHTML = "<tr><td colspan='4'>Error al cargar</td></tr>";
+        statusEl.textContent = "Error al cargar datos: " + e.message;
+      }
+    }
+
+    // Renderizar fila según sección
+    function renderRow(sectionId, item) {
+      if (sectionId === "quienes") {
+        const id = item.id ?? "";
+        const name = item.name ?? "";
+        const email = item.email ?? "";
+        return `<tr data-id="${id}">
+          <td>${id}</td>
+          <td contenteditable="true">${name}</td>
+          <td contenteditable="true">${email}</td>
+          <td>
+            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
+            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+          </td>
+        </tr>`;
+      }
+      if (sectionId === "valores") {
+        const id = item.id ?? "";
+        const title = item.title ?? "";
+        const body = item.body ?? "";
+        return `<tr data-id="${id}">
+          <td>${id}</td>
+          <td contenteditable="true">${title}</td>
+          <td contenteditable="true">${body}</td>
+          <td>
+            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
+            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+          </td>
+        </tr>`;
+      }
+      if (sectionId === "contacto") {
+        const id = item.id ?? "";
+        const name = item.name ?? "";
+        const phone = (item.phone ?? "").toString();
+        return `<tr data-id="${id}">
+          <td>${id}</td>
+          <td contenteditable="true">${name}</td>
+          <td contenteditable="true">${phone}</td>
+          <td>
+            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
+            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+          </td>
+        </tr>`;
+      }
+      if (sectionId === "portafolio") {
+        const id = item.id ?? "";
+        const title = item.title ?? `Proyecto ${id}`;
+        const state = item.completed ? "Finalizado" : "Pendiente";
+        return `<tr data-id="${id}">
+          <td>${id}</td>
+          <td contenteditable="true">${title}</td>
+          <td contenteditable="true">${state}</td>
+          <td>
+            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
+            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+          </td>
+        </tr>`;
+      }
+      return "";
+    }
+
+    // CREATE
+    async function addRow(sectionId) {
+      const statusEl = document.getElementById("status-" + sectionId);
+      let payload = {}, url = "", tableBody;
+
+      if (sectionId === "quienes") {
+        const name = document.getElementById("quienes-name").value.trim();
+        const email = document.getElementById("quienes-email").value.trim();
+        if (!name || !email) { alert("Completa nombre y email."); return; }
+        payload = { name, email };
+        url = `${API}/users`;
+        tableBody = document.querySelector("#table-quienes tbody");
+      } else if (sectionId === "valores") {
+        const title = document.getElementById("valores-title").value.trim();
+        const body = document.getElementById("valores-body").value.trim();
+        if (!title || !body) { alert("Completa título y descripción."); return; }
+        payload = { title, body, userId: 1 };
+        url = `${API}/posts`;
+        tableBody = document.querySelector("#table-valores tbody");
+      } else if (sectionId === "contacto") {
+        const name = document.getElementById("contacto-name").value.trim();
+        const phone = document.getElementById("contacto-phone").value.trim();
+        if (!name || !phone) { alert("Completa nombre y teléfono."); return; }
+        payload = { name, phone };
+        url = `${API}/users`;
+        tableBody = document.querySelector("#table-contacto tbody");
+      } else if (sectionId === "portafolio") {
+        const title = document.getElementById("portafolio-title").value.trim();
+        const state = document.getElementById("portafolio-state").value.trim();
+        if (!title || !state) { alert("Completa proyecto y estado."); return; }
+        payload = { title, completed: /fin/i.test(state) };
+        url = `${API}/todos`;
+        tableBody = document.querySelector("#table-portafolio tbody");
+      }
+
+      try {
+        statusEl.textContent = "Creando...";
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=UTF-8" },
+          body: JSON.stringify(payload)
+        });
+        const created = await res.json();
+        // JSONPlaceholder asigna un id ficticio; renderizamos fila con ese objeto
+        tableBody.insertAdjacentHTML("afterbegin", renderRow(sectionId, created));
+        statusEl.textContent = "Creado (simulado).";
+      } catch (e) {
+        statusEl.textContent = "Error en creación: " + e.message;
+        alert("Error creando: " + e.message);
+      }
+    }
+
+    // UPDATE
+    async function editRow(sectionId, id) {
+      const statusEl = document.getElementById("status-" + sectionId);
+      const row = document.querySelector(`#${tableId(sectionId)} tbody tr[data-id="${id}"]`);
+      if (!row) { alert("Fila no encontrada."); return; }
+
+      let payload = {}, url = "";
+      if (sectionId === "quienes") {
+        const name = row.children[1].innerText.trim();
+        const email = row.children[2].innerText.trim();
+        payload = { name, email };
+        url = `${API}/users/${id}`;
+      } else if (sectionId === "valores") {
+        const title = row.children[1].innerText.trim();
+        const body = row.children[2].innerText.trim();
+        payload = { title, body, userId: 1 };
+        url = `${API}/posts/${id}`;
+      } else if (sectionId === "contacto") {
+        const name = row.children[1].innerText.trim();
+        const phone = row.children[2].innerText.trim();
+        payload = { name, phone };
+        url = `${API}/users/${id}`;
+      } else if (sectionId === "portafolio") {
+        const title = row.children[1].innerText.trim();
+        const state = row.children[2].innerText.trim();
+        payload = { title, completed: /fin/i.test(state) };
+        url = `${API}/todos/${id}`;
+      }
+
+      try {
+        statusEl.textContent = "Actualizando...";
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json; charset=UTF-8" },
+          body: JSON.stringify(payload)
+        });
+        const updated = await res.json();
+        // Actualizamos visualmente la fila con los datos devueltos
+        row.outerHTML = renderRow(sectionId, updated);
+        statusEl.textContent = "Actualizado (simulado).";
+      } catch (e) {
+        statusEl.textContent = "Error en actualización: " + e.message;
+        alert("Error actualizando: " + e.message);
+      }
+    }
+
+    // DELETE
+    async function deleteRow(sectionId, id) {
+      const statusEl = document.getElementById("status-" + sectionId);
+      const tableBody = document.querySelector(`#${tableId(sectionId)} tbody`);
+      try {
+        statusEl.textContent = "Eliminando...";
+        const res = await fetch(`${endpoint(sectionId)}/${id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Respuesta no OK");
+        const row = tableBody.querySelector(`tr[data-id="${id}"]`);
+        if (row) row.remove();
+        statusEl.textContent = "Eliminado (simulado).";
+      } catch (e) {
+        statusEl.textContent = "Error al eliminar: " + e.message;
+        alert("Error eliminando: " + e.message);
+      }
+    }
+
+    // Helpers de rutas y tablas
+    function tableId(sectionId) {
+      if (sectionId === "quienes") return "table-quienes";
+      if (sectionId === "valores") return "table-valores";
+      if (sectionId === "contacto") return "table-contacto";
+      if (sectionId === "portafolio") return "table-portafolio";
+      return "";
+    }
+    function endpoint(sectionId) {
+      if (sectionId === "quienes") return `${API}/users`;
+      if (sectionId === "valores") return `${API}/posts`;
+      if (sectionId === "contacto") return `${API}/users`;
+      if (sectionId === "portafolio") return `${API}/todos`;
+      return API;
+    }
+
+    // Inicialización
     document.querySelectorAll("section").forEach(sec => sec.dataset.page = 0);
+    // Cargar primera sección por defecto
     loadMore(document.getElementById("quienes"));
+    loadAPIData("quienes");
   </script>
 </body>
 </html>
