@@ -1,11 +1,154 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPA Responsiva</title>
+  <style>
+    /* ====== GRID SYSTEM ====== */
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
+    }
+    .col { grid-column: span 12; }
+
+    @media (min-width: 576px) {
+      .col-sm-6 { grid-column: span 6; }
+      .col-sm-4 { grid-column: span 4; }
+    }
+    @media (min-width: 768px) {
+      .col-md-6 { grid-column: span 6; }
+      .col-md-4 { grid-column: span 4; }
+    }
+    @media (min-width: 992px) {
+      .col-lg-6 { grid-column: span 6; }
+      .col-lg-4 { grid-column: span 4; }
+    }
+    @media (min-width: 1200px) {
+      .col-xl-6 { grid-column: span 6; }
+      .col-xl-4 { grid-column: span 4; }
+    }
+    @media (min-width: 1400px) {
+      .col-xxl-6 { grid-column: span 6; }
+      .col-xxl-4 { grid-column: span 4; }
+    }
+
+    /* ====== GENERAL STYLES ====== */
+    body { font-family: Arial, sans-serif; margin: 0; }
+    nav {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    nav a:hover { text-decoration: underline; }
+
+    section {
+      display: none;
+      padding: 2rem;
+    }
+    section.active { display: block; }
+
+    .demo {
+      background: #eee;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 0.5rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    funciona muy bien
+  <!-- ====== NAVIGATION ====== -->
+  <nav>
+    <a onclick="showSection('quienes')">Quienes Somos</a>
+    <a onclick="showSection('valores')">Nuestros Valores</a>
+    <a onclick="showSection('contacto')">Contacto</a>
+    <a onclick="showSection('portafolio')">Portafolio</a>
+  </nav>
+
+  <!-- ====== SECTIONS ====== -->
+  <section id="quienes" class="active">
+    <h2>Quienes Somos</h2>
+    <div class="row">
+      <div class="col col-sm-6 col-md-4 demo">Historia</div>
+      <div class="col col-sm-6 col-md-8 demo">Equipo</div>
+    </div>
+    <table>
+      <tr><th>Nombre</th><th>Rol</th></tr>
+      <tr><td>Ana</td><td>CEO</td></tr>
+      <tr><td>Carlos</td><td>CTO</td></tr>
+    </table>
+  </section>
+
+  <section id="valores">
+    <h2>Nuestros Valores</h2>
+    <div class="row">
+      <div class="col col-sm-4 demo">Innovación</div>
+      <div class="col col-sm-4 demo">Transparencia</div>
+      <div class="col col-sm-4 demo">Compromiso</div>
+    </div>
+    <table>
+      <tr><th>Valor</th><th>Descripción</th></tr>
+      <tr><td>Innovación</td><td>Buscamos soluciones creativas</td></tr>
+      <tr><td>Transparencia</td><td>Comunicación clara</td></tr>
+    </table>
+  </section>
+
+  <section id="contacto">
+    <h2>Contacto</h2>
+    <div class="row">
+      <div class="col col-sm-6 demo">Teléfono: +52 555-1234</div>
+      <div class="col col-sm-6 demo">Email: contacto@empresa.com</div>
+    </div>
+    <table>
+      <tr><th>Medio</th><th>Detalle</th></tr>
+      <tr><td>Teléfono</td><td>+52 555-1234</td></tr>
+      <tr><td>Email</td><td>contacto@empresa.com</td></tr>
+    </table>
+  </section>
+
+  <section id="portafolio">
+    <h2>Portafolio de Desarrollos</h2>
+    <div class="row">
+      <div class="col col-sm-6 col-md-4 demo">App Móvil</div>
+      <div class="col col-sm-6 col-md-4 demo">Web Corporativa</div>
+      <div class="col col-sm-12 col-md-4 demo">E-commerce</div>
+    </div>
+    <table>
+      <tr><th>Proyecto</th><th>Estado</th></tr>
+      <tr><td>App Móvil</td><td>Finalizado</td></tr>
+      <tr><td>Web Corporativa</td><td>En desarrollo</td></tr>
+      <tr><td>E-commerce</td><td>Planeado</td></tr>
+    </table>
+  </section>
+
+  <!-- ====== SCRIPT SPA ====== -->
+  <script>
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+  </script>
 </body>
 </html>
