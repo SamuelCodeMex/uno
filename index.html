@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>SPA Responsiva con API y CRUD</title>
   <style>
     /* ====== GRID SYSTEM ====== */
@@ -15,9 +15,8 @@
     @media (min-width: 1400px) { .col-xxl-6 { grid-column: span 6; } .col-xxl-4 { grid-column: span 4; } }
 
     /* ====== GENERAL STYLES ====== */
-    :root { color-scheme: light dark; }
     body { font-family: Arial, sans-serif; margin: 0; }
-    nav { background: #333; color: #fff; padding: 1rem; display: flex; gap: 1rem; position: sticky; top: 0; z-index: 10; }
+    nav { background: #333; color: #fff; padding: 1rem; display: flex; flex-wrap: wrap; gap: 1rem; position: sticky; top: 0; z-index: 10; }
     nav a { color: #fff; text-decoration: none; cursor: pointer; }
     nav a:hover { text-decoration: underline; }
 
@@ -26,28 +25,34 @@
 
     .demo { background: #eee; border: 1px solid #ccc; padding: 1rem; text-align: center; font-weight: bold; }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; min-width: 420px; }
     table, th, td { border: 1px solid #ccc; }
-    th, td { padding: 0.5rem; text-align: center; }
+    th, td { padding: 0.5rem; text-align: left; }
     caption { text-align: left; padding: 0.5rem 0; font-weight: bold; }
 
+    @media (max-width: 576px) {
+      table th, table td { font-size: 0.85rem; padding: 0.35rem; }
+      nav { gap: 0.5rem; }
+    }
+
     .loader { text-align: center; padding: 1rem; color: #666; }
-    .btn { padding: 0.3rem 0.6rem; margin: 0.2rem; cursor: pointer; border: none; border-radius: 4px; }
+    .btn { padding: 0.35rem 0.7rem; margin: 0.2rem; cursor: pointer; border: none; border-radius: 4px; }
     .btn-edit { background: #ffc107; }
     .btn-delete { background: #dc3545; color: #fff; }
     .btn-add { background: #28a745; color: #fff; margin-top: 0.5rem; }
     .controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
-    input[type="text"], input[type="email"] { padding: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
-    .status { font-size: 0.9rem; color: #555; margin-top: 0.5rem; }
+    input[type="text"], input[type="email"] { padding: 0.35rem; border: 1px solid #ccc; border-radius: 4px; }
+    .status { font-size: 0.9rem; color: #555; margin-top: 0.5rem; min-height: 1.2em; }
   </style>
 </head>
 <body>
   <!-- ====== NAVIGATION ====== -->
   <nav>
-    <a onclick="showSection('quienes')">Quienes Somos</a>
-    <a onclick="showSection('valores')">Nuestros Valores</a>
-    <a onclick="showSection('contacto')">Contacto</a>
-    <a onclick="showSection('portafolio')">Portafolio</a>
+    <a data-section="quienes">Quienes Somos</a>
+    <a data-section="valores">Nuestros Valores</a>
+    <a data-section="contacto">Contacto</a>
+    <a data-section="portafolio">Portafolio</a>
   </nav>
 
   <!-- ====== SECTIONS ====== -->
@@ -60,14 +65,16 @@
     <div class="controls">
       <input id="quienes-name" type="text" placeholder="Nombre"/>
       <input id="quienes-email" type="email" placeholder="Email"/>
-      <button class="btn btn-add" onclick="addRow('quienes')">➕ Agregar Usuario</button>
+      <button class="btn btn-add" data-action="add" data-section="quienes">➕ Agregar Usuario</button>
     </div>
 
-    <table id="table-quienes">
-      <caption>Usuarios (API: /users)</caption>
-      <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acciones</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-responsive">
+      <table id="table-quienes">
+        <caption>Usuarios (API: /users)</caption>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <section id="valores">
@@ -79,14 +86,16 @@
     <div class="controls">
       <input id="valores-title" type="text" placeholder="Título"/>
       <input id="valores-body" type="text" placeholder="Descripción"/>
-      <button class="btn btn-add" onclick="addRow('valores')">➕ Agregar Valor</button>
+      <button class="btn btn-add" data-action="add" data-section="valores">➕ Agregar Valor</button>
     </div>
 
-    <table id="table-valores">
-      <caption>Valores (API: /posts)</caption>
-      <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Acciones</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-responsive">
+      <table id="table-valores">
+        <caption>Valores (API: /posts)</caption>
+        <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <section id="contacto">
@@ -98,14 +107,16 @@
     <div class="controls">
       <input id="contacto-name" type="text" placeholder="Nombre"/>
       <input id="contacto-phone" type="text" placeholder="Teléfono"/>
-      <button class="btn btn-add" onclick="addRow('contacto')">➕ Agregar Contacto</button>
+      <button class="btn btn-add" data-action="add" data-section="contacto">➕ Agregar Contacto</button>
     </div>
 
-    <table id="table-contacto">
-      <caption>Contactos (API: /users)</caption>
-      <thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-responsive">
+      <table id="table-contacto">
+        <caption>Contactos (API: /users)</caption>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <section id="portafolio">
@@ -116,101 +127,138 @@
 
     <div class="controls">
       <input id="portafolio-title" type="text" placeholder="Proyecto"/>
-      <input id="portafolio-state" type="text" placeholder="Estado"/>
-      <button class="btn btn-add" onclick="addRow('portafolio')">➕ Agregar Proyecto</button>
+      <input id="portafolio-state" type="text" placeholder="Estado (Finalizado/Pendiente)"/>
+      <button class="btn btn-add" data-action="add" data-section="portafolio">➕ Agregar Proyecto</button>
     </div>
 
-    <table id="table-portafolio">
-      <caption>Proyectos (API: /todos)</caption>
-      <thead><tr><th>ID</th><th>Proyecto</th><th>Estado</th><th>Acciones</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-responsive">
+      <table id="table-portafolio">
+        <caption>Proyectos (API: /todos)</caption>
+        <thead><tr><th>ID</th><th>Proyecto</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <!-- ====== SCRIPT SPA + LAZY + API CRUD ====== -->
   <script>
     const API = "https://jsonplaceholder.typicode.com";
+    const observerBySection = new Map();
 
-    // Cambiar sección activa
+    // Navegación SPA
+    document.querySelectorAll("nav a").forEach(a => {
+      a.addEventListener("click", () => showSection(a.dataset.section));
+    });
+
     function showSection(id) {
       document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
       const sec = document.getElementById(id);
       sec.classList.add("active");
-      sec.querySelector(".content").innerHTML = "";
-      sec.dataset.page = 0;
-      sec.querySelector(".loader").innerText = "Desplázate para cargar más...";
-      loadMore(sec);
+
+      // Reset lazy content
+      const content = sec.querySelector(".content");
+      content.innerHTML = "";
+      sec.dataset.page = "0";
+      const loader = sec.querySelector(".loader");
+      loader.textContent = "Desplázate para cargar más...";
+
+      // Configurar IntersectionObserver por sección
+      setupObserverForSection(sec);
+
+      // Cargar datos API
       loadAPIData(id);
     }
 
-    // Generar contenido simulado (para el scroll)
+    // Configurar IntersectionObserver para cada sección activa
+    function setupObserverForSection(sectionEl) {
+      const loader = sectionEl.querySelector(".loader");
+
+      // Desconectar observer anterior de la sección
+      if (observerBySection.has(sectionEl.id)) {
+        observerBySection.get(sectionEl.id).disconnect();
+      }
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            loadMore(sectionEl);
+          }
+        });
+      }, { root: null, rootMargin: "0px", threshold: 0.1 });
+
+      io.observe(loader);
+      observerBySection.set(sectionEl.id, io);
+
+      // Primer bloque
+      loadMore(sectionEl);
+    }
+
+    // Generar contenido simulado
     function generateContent(sectionId, page) {
       let html = '<div class="row">';
       for (let i = 1; i <= 3; i++) {
         html += `<div class="col col-sm-6 col-md-4 demo">${sectionId} - Bloque ${page*3+i}</div>`;
       }
       html += '</div>';
-      // Agregar una tabla de ejemplo para ver la responsividad
-      html += `<table>
+      html += `<div class="table-responsive"><table>
         <caption>Tabla de ejemplo (${sectionId}) - Página ${page+1}</caption>
         <thead><tr><th>Columna A</th><th>Columna B</th><th>Columna C</th></tr></thead>
         <tbody>
           <tr><td>Dato ${page+1}.1</td><td>Dato ${page+1}.2</td><td>Dato ${page+1}.3</td></tr>
           <tr><td>Dato ${page+1}.4</td><td>Dato ${page+1}.5</td><td>Dato ${page+1}.6</td></tr>
         </tbody>
-      </table>`;
+      </table></div>`;
       return html;
     }
 
-    // Lazy loading
+    // Lazy loading por secciones (máximo 5 páginas)
     function loadMore(sec) {
-      let page = parseInt(sec.dataset.page || "0");
-      if (page >= 5) { sec.querySelector(".loader").innerText = "Fin del contenido"; return; }
-      sec.querySelector(".content").innerHTML += generateContent(sec.id, page);
-      sec.dataset.page = page + 1;
+      const current = parseInt(sec.dataset.page || "0", 10);
+      if (current >= 5) {
+        sec.querySelector(".loader").textContent = "Fin del contenido";
+        return;
+      }
+      sec.querySelector(".content").insertAdjacentHTML("beforeend", generateContent(sec.id, current));
+      sec.dataset.page = String(current + 1);
     }
 
-    window.addEventListener("scroll", () => {
-      const sec = document.querySelector("section.active");
-      if (!sec) return;
-      const loader = sec.querySelector(".loader");
-      const rect = loader.getBoundingClientRect();
-      if (rect.top < window.innerHeight) loadMore(sec);
-    });
-
-    // READ de API según sección
+    // Lectura de datos API según sección
     async function loadAPIData(sectionId) {
       const statusEl = document.getElementById("status-" + sectionId);
       statusEl.textContent = "Cargando datos...";
-      let url, tableBody;
-      if (sectionId === "quienes") {
-        url = `${API}/users`;
-        tableBody = document.querySelector("#table-quienes tbody");
-      } else if (sectionId === "valores") {
-        url = `${API}/posts`;
-        tableBody = document.querySelector("#table-valores tbody");
-      } else if (sectionId === "contacto") {
-        url = `${API}/users`;
-        tableBody = document.querySelector("#table-contacto tbody");
-      } else if (sectionId === "portafolio") {
-        url = `${API}/todos`;
-        tableBody = document.querySelector("#table-portafolio tbody");
-      }
+      const { url, tableBody } = resolveEndpointAndTable(sectionId);
+
       tableBody.innerHTML = "<tr><td colspan='4'>Cargando...</td></tr>";
       try {
         const res = await fetch(url);
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
         tableBody.innerHTML = "";
-        const rows = data.slice(0, 5); // pocas filas para demo
-        rows.forEach(item => tableBody.innerHTML += renderRow(sectionId, item));
+        data.slice(0, 5).forEach(item => tableBody.insertAdjacentHTML("beforeend", renderRow(sectionId, item)));
         statusEl.textContent = "Datos cargados (CRUD simulado).";
       } catch (e) {
-        tableBody.innerHTML = "<tr><td colspan='4'>Error al cargar</td></tr>";
-        statusEl.textContent = "Error al cargar datos: " + e.message;
+        tableBody.innerHTML = "<tr><td colspan='4'>Error al cargar datos</td></tr>";
+        statusEl.textContent = "Error al cargar: " + e.message;
       }
     }
 
-    // Renderizar fila según sección
+    function resolveEndpointAndTable(sectionId) {
+      if (sectionId === "quienes") {
+        return { url: `${API}/users`, tableBody: document.querySelector("#table-quienes tbody") };
+      }
+      if (sectionId === "valores") {
+        return { url: `${API}/posts`, tableBody: document.querySelector("#table-valores tbody") };
+      }
+      if (sectionId === "contacto") {
+        return { url: `${API}/users`, tableBody: document.querySelector("#table-contacto tbody") };
+      }
+      if (sectionId === "portafolio") {
+        return { url: `${API}/todos`, tableBody: document.querySelector("#table-portafolio tbody") };
+      }
+      return { url: API, tableBody: document.createElement("tbody") };
+    }
+
+    // Renderizar fila según sección (sin reemplazar la fila completa al editar)
     function renderRow(sectionId, item) {
       if (sectionId === "quienes") {
         const id = item.id ?? "";
@@ -218,11 +266,11 @@
         const email = item.email ?? "";
         return `<tr data-id="${id}">
           <td>${id}</td>
-          <td contenteditable="true">${name}</td>
-          <td contenteditable="true">${email}</td>
+          <td contenteditable="true">${escapeHtml(name)}</td>
+          <td contenteditable="true">${escapeHtml(email)}</td>
           <td>
-            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
-            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+            <button class="btn btn-edit" data-action="edit" data-section="${sectionId}" data-id="${id}">✏️</button>
+            <button class="btn btn-delete" data-action="delete" data-section="${sectionId}" data-id="${id}">🗑️</button>
           </td>
         </tr>`;
       }
@@ -232,11 +280,11 @@
         const body = item.body ?? "";
         return `<tr data-id="${id}">
           <td>${id}</td>
-          <td contenteditable="true">${title}</td>
-          <td contenteditable="true">${body}</td>
+          <td contenteditable="true">${escapeHtml(title)}</td>
+          <td contenteditable="true">${escapeHtml(body)}</td>
           <td>
-            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
-            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+            <button class="btn btn-edit" data-action="edit" data-section="${sectionId}" data-id="${id}">✏️</button>
+            <button class="btn btn-delete" data-action="delete" data-section="${sectionId}" data-id="${id}">🗑️</button>
           </td>
         </tr>`;
       }
@@ -246,11 +294,11 @@
         const phone = (item.phone ?? "").toString();
         return `<tr data-id="${id}">
           <td>${id}</td>
-          <td contenteditable="true">${name}</td>
-          <td contenteditable="true">${phone}</td>
+          <td contenteditable="true">${escapeHtml(name)}</td>
+          <td contenteditable="true">${escapeHtml(phone)}</td>
           <td>
-            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
-            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+            <button class="btn btn-edit" data-action="edit" data-section="${sectionId}" data-id="${id}">✏️</button>
+            <button class="btn btn-delete" data-action="delete" data-section="${sectionId}" data-id="${id}">🗑️</button>
           </td>
         </tr>`;
       }
@@ -260,16 +308,39 @@
         const state = item.completed ? "Finalizado" : "Pendiente";
         return `<tr data-id="${id}">
           <td>${id}</td>
-          <td contenteditable="true">${title}</td>
-          <td contenteditable="true">${state}</td>
+          <td contenteditable="true">${escapeHtml(title)}</td>
+          <td contenteditable="true">${escapeHtml(state)}</td>
           <td>
-            <button class="btn btn-edit" onclick="editRow('${sectionId}', ${id})">✏️</button>
-            <button class="btn btn-delete" onclick="deleteRow('${sectionId}', ${id})">🗑️</button>
+            <button class="btn btn-edit" data-action="edit" data-section="${sectionId}" data-id="${id}">✏️</button>
+            <button class="btn btn-delete" data-action="delete" data-section="${sectionId}" data-id="${id}">🗑️</button>
           </td>
         </tr>`;
       }
       return "";
     }
+
+    // Delegación de eventos para botones de CRUD
+    document.body.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const sectionId = btn.dataset.section;
+
+      // Create
+      if (action === "add" && sectionId) {
+        await addRow(sectionId);
+        return;
+      }
+
+      // Update/Delete
+      if ((action === "edit" || action === "delete") && sectionId) {
+        const id = parseInt(btn.dataset.id, 10);
+        if (isNaN(id)) return;
+        if (action === "edit") await editRow(sectionId, id);
+        else await deleteRow(sectionId, id);
+      }
+    });
 
     // CREATE
     async function addRow(sectionId) {
@@ -301,7 +372,7 @@
         const title = document.getElementById("portafolio-title").value.trim();
         const state = document.getElementById("portafolio-state").value.trim();
         if (!title || !state) { alert("Completa proyecto y estado."); return; }
-        payload = { title, completed: /fin/i.test(state) };
+        payload = { title, completed: /^fin(alizado)?$/i.test(state) };
         url = `${API}/todos`;
         tableBody = document.querySelector("#table-portafolio tbody");
       }
@@ -314,7 +385,6 @@
           body: JSON.stringify(payload)
         });
         const created = await res.json();
-        // JSONPlaceholder asigna un id ficticio; renderizamos fila con ese objeto
         tableBody.insertAdjacentHTML("afterbegin", renderRow(sectionId, created));
         statusEl.textContent = "Creado (simulado).";
       } catch (e) {
@@ -348,7 +418,7 @@
       } else if (sectionId === "portafolio") {
         const title = row.children[1].innerText.trim();
         const state = row.children[2].innerText.trim();
-        payload = { title, completed: /fin/i.test(state) };
+        payload = { title, completed: /^fin(alizado)?$/i.test(state) };
         url = `${API}/todos/${id}`;
       }
 
@@ -360,12 +430,28 @@
           body: JSON.stringify(payload)
         });
         const updated = await res.json();
-        // Actualizamos visualmente la fila con los datos devueltos
-        row.outerHTML = renderRow(sectionId, updated);
+        // Actualizamos celdas sin reemplazar toda la fila para no perder eventos
+        updateRowCells(sectionId, row, updated);
         statusEl.textContent = "Actualizado (simulado).";
       } catch (e) {
         statusEl.textContent = "Error en actualización: " + e.message;
         alert("Error actualizando: " + e.message);
+      }
+    }
+
+    function updateRowCells(sectionId, row, data) {
+      if (sectionId === "quienes") {
+        row.children[1].innerText = data.name ?? row.children[1].innerText;
+        row.children[2].innerText = data.email ?? row.children[2].innerText;
+      } else if (sectionId === "valores") {
+        row.children[1].innerText = data.title ?? row.children[1].innerText;
+        row.children[2].innerText = data.body ?? row.children[2].innerText;
+      } else if (sectionId === "contacto") {
+        row.children[1].innerText = data.name ?? row.children[1].innerText;
+        row.children[2].innerText = data.phone ?? row.children[2].innerText;
+      } else if (sectionId === "portafolio") {
+        row.children[1].innerText = data.title ?? row.children[1].innerText;
+        row.children[2].innerText = (data.completed ? "Finalizado" : "Pendiente");
       }
     }
 
@@ -376,7 +462,7 @@
       try {
         statusEl.textContent = "Eliminando...";
         const res = await fetch(`${endpoint(sectionId)}/${id}`, { method: "DELETE" });
-        if (!res.ok) throw new Error("Respuesta no OK");
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const row = tableBody.querySelector(`tr[data-id="${id}"]`);
         if (row) row.remove();
         statusEl.textContent = "Eliminado (simulado).";
@@ -386,7 +472,7 @@
       }
     }
 
-    // Helpers de rutas y tablas
+    // Helpers
     function tableId(sectionId) {
       if (sectionId === "quienes") return "table-quienes";
       if (sectionId === "valores") return "table-valores";
@@ -401,11 +487,12 @@
       if (sectionId === "portafolio") return `${API}/todos`;
       return API;
     }
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[s]));
+    }
 
-    // Inicialización
-    document.querySelectorAll("section").forEach(sec => sec.dataset.page = 0);
-    // Cargar primera sección por defecto
-    loadMore(document.getElementById("quienes"));
+    // Inicialización: observer y primera carga
+    setupObserverForSection(document.getElementById("quienes"));
     loadAPIData("quienes");
   </script>
 </body>
